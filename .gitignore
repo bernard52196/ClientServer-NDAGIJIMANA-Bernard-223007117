@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+.venv/
+.venv-win/
+venv/
+.env
+.env.*
+!.env.example
+
+# Django
+staticfiles/
+media/
+
+# Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.vercel/
+
+# Environment variables
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Editors
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
