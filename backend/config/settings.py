@@ -164,7 +164,6 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ],
 }
-# Production error logging
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -174,6 +173,11 @@ LOGGING = {
         },
     },
     "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
         "django": {
             "handlers": ["console"],
             "level": "ERROR",
