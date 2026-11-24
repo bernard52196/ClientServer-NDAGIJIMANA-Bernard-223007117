@@ -62,7 +62,7 @@ export default function ReportsPage() {
       </aside>
 
       <main className="flex-1 p-6 md:p-10">
-        <StudentIdentification />
+        
         <div className="mb-8">
           <h2 className="text-3xl font-bold">Reports & Analytics</h2>
           <p className="mt-2 text-slate-500">
@@ -166,6 +166,7 @@ export default function ReportsPage() {
             </section>
           </>
         )}
+         <StudentIdentification />
       </main>
     </div>
   );

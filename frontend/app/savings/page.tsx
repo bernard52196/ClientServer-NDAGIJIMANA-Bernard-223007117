@@ -187,7 +187,7 @@ export default function SavingsPage() {
 
         {/* Main Content */}
         <section className="flex-1 p-5 md:p-8">  
-         <StudentIdentification />
+         
          
 
           <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
@@ -360,6 +360,7 @@ export default function SavingsPage() {
           </div>
         </section>
       </div>
+       <StudentIdentification />
     </main>
   );
 }

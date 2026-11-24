@@ -182,7 +182,7 @@ export default function GroupsPage() {
   return (
     <div className="min-h-screen bg-slate-100 p-6 text-slate-800 md:p-10">
       <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
-         <StudentIdentification />
+         
         <div>
           <h1 className="text-3xl font-bold">Savings Groups</h1>
           <p className="mt-2 text-slate-500">
@@ -367,6 +367,7 @@ export default function GroupsPage() {
           </div>
         )}
       </section>
+        <StudentIdentification />
     </div>
   );
 }

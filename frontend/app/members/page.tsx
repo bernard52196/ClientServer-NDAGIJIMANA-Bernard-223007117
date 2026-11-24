@@ -231,7 +231,7 @@ export default function MembersPage() {
 
         {/* Main Content */}
         <section className="flex-1 p-5 md:p-8">
-           <StudentIdentification />
+           
 
           <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>
@@ -245,7 +245,7 @@ export default function MembersPage() {
               href="/"
               className="text-sm font-medium text-emerald-700 hover:underline"
             >
-              â† Back to Dashboard
+              Back to Dashboard
             </Link>
           </header>
 
@@ -500,6 +500,7 @@ export default function MembersPage() {
           </div>
         </section>
       </div>
+       <StudentIdentification />
     </main>
   );
 }

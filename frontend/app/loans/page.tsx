@@ -315,7 +315,7 @@ export default function LoansPage() {
 
         {/* Main Content */}
         <section className="flex-1 p-5 md:p-8">
-         <StudentIdentification />
+         
           <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>
               <h2 className="text-2xl font-bold">Loan Management</h2>
@@ -687,6 +687,7 @@ export default function LoansPage() {
           </div>
         </section>
       </div>
+       <StudentIdentification />
     </main>
   );
 }
