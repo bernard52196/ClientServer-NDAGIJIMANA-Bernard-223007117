@@ -1,6 +1,9 @@
 ﻿"use client";
+"use client";
 import StudentIdentification from "@/components/StudentIdentification";
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import { apiGet, apiPost } from "../lib/api";
 
 type Group = {
@@ -27,6 +30,18 @@ type Analytics = {
 };
 
 export default function Home() {
+  const router = useRouter();
+
+  async function handleLogout() {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      alert("Logout failed: " + error.message);
+      return;
+    }
+
+    router.replace("/login");
+  }
   const [groups, setGroups] = useState<Group[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [loans, setLoans] = useState<Loan[]>([]);
@@ -162,7 +177,14 @@ export default function Home() {
             <a href="/reports" className="block px-4 py-3 text-slate-300 hover:text-white">
   📊 Reports
 </a>
-          </nav>
+                </nav>
+
+          <button
+            onClick={handleLogout}
+            className="mt-8 w-full rounded-lg bg-red-600 px-4 py-3 text-left font-semibold text-white transition hover:bg-red-700"
+          >
+             Logout
+          </button>
         </aside>
 
         {/* Main Dashboard */}
