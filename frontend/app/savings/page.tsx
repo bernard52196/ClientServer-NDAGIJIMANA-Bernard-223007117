@@ -1,6 +1,6 @@
 
 "use client";
-
+import StudentIdentification from "@/components/StudentIdentification";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { apiGet, apiPost } from "@/lib/api";
@@ -186,7 +186,9 @@ export default function SavingsPage() {
         </aside>
 
         {/* Main Content */}
-        <section className="flex-1 p-5 md:p-8">
+        <section className="flex-1 p-5 md:p-8">  
+         <StudentIdentification />
+         
 
           <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>

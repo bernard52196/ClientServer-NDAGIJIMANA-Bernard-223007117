@@ -1,5 +1,5 @@
 ﻿"use client";
-
+import StudentIdentification from "@/components/StudentIdentification";
 import { Suspense, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { apiGet } from "@/lib/api";
@@ -134,6 +134,7 @@ function GroupDetailsContent() {
       </button>
 
       <header className="mb-8">
+          <StudentIdentification />
         <p className="text-sm text-slate-500">Savings Group Details</p>
         <h1 className="mt-2 text-3xl font-bold">{group.name}</h1>
         <p className="mt-2 text-slate-500">Group ID: {group.id}</p>

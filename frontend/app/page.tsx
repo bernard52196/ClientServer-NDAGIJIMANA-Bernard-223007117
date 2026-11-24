@@ -1,5 +1,5 @@
 ﻿"use client";
-
+import StudentIdentification from "@/components/StudentIdentification";
 import { useCallback, useEffect, useState } from "react";
 import { apiGet, apiPost } from "../lib/api";
 
@@ -167,6 +167,7 @@ export default function Home() {
 
         {/* Main Dashboard */}
         <section className="flex-1 p-5 md:p-8">
+          <StudentIdentification />
 
           <header className="mb-8">
             <h2 className="text-2xl font-bold">Dashboard</h2>
