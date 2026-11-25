@@ -150,35 +150,35 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-slate-100 text-slate-800">
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen flex-col md:flex-row">
 
         {/* Sidebar */}
-        <aside className="hidden w-64 bg-slate-900 p-6 text-white md:block">
+        <aside className="w-full bg-slate-900 p-4 text-white md:w-64 md:p-6">
           <h1 className="mb-10 text-xl font-bold">
             Community<span className="text-emerald-400">Save</span>
           </h1>
 
-          <nav className="space-y-5">
-  <a href="/" className="block rounded-lg px-4 py-3 text-slate-300 transition hover:bg-slate-800 hover:text-white">
-    ?? Home
+          <nav className="grid grid-cols-2 gap-2 md:block md:space-y-3">
+  <a href="/" className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white">
+    Home
   </a>
-  <p className="rounded-lg bg-emerald-600 px-4 py-3">
-    ? Dashboard
+  <p className="rounded-lg bg-emerald-600 px-4 py-3 font-semibold text-white">
+    Dashboard
   </p>
-  <a href="/groups" className="block px-4 py-3 text-slate-300">
-    ?? Savings Groups
+  <a href="/groups" className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white">
+    Savings Groups
   </a>
-  <a href="/members" className="block px-4 py-3 text-slate-300">
-    ?? Members
+  <a href="/members" className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white">
+    Members
   </a>
-  <a href="/savings" className="block px-4 py-3 text-slate-300">
-    ?? Savings
+  <a href="/savings" className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white">
+    Savings
   </a>
-  <a href="/loans" className="block px-4 py-3 text-slate-300">
-    ?? Loans
+  <a href="/loans" className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white">
+    Loans
   </a>
-  <a href="/reports" className="block px-4 py-3 text-slate-300 hover:text-white">
-    ?? Reports
+  <a href="/reports" className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white">
+    Reports
   </a>
 </nav>
 
