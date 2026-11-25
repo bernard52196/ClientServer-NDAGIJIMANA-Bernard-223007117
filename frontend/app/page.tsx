@@ -159,9 +159,6 @@ export default function Home() {
           </h1>
 
           <nav className="grid grid-cols-2 gap-2 md:block md:space-y-3">
-  <a href="/" className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white">
-    Home
-  </a>
   <p className="rounded-lg bg-emerald-600 px-4 py-3 font-semibold text-white">
     Dashboard
   </p>
