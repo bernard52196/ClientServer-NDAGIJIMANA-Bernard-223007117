@@ -159,25 +159,28 @@ export default function Home() {
           </h1>
 
           <nav className="space-y-5">
-            <p className="rounded-lg bg-emerald-600 px-4 py-3">
-              ▦ Dashboard
-            </p>
-            <a href="/groups" className="block px-4 py-3 text-slate-300">
-              👥 Savings Groups
-            </a>
-            <a href="/members" className="block px-4 py-3 text-slate-300">
-              👤 Members
-            </a>
-            <a href="/savings" className="block px-4 py-3 text-slate-300">
-              💰 Savings
-            </a>
-            <a href="/loans" className="block px-4 py-3 text-slate-300">
-              💳 Loans
-            </a>
-            <a href="/reports" className="block px-4 py-3 text-slate-300 hover:text-white">
-  📊 Reports
-</a>
-                </nav>
+  <a href="/" className="block rounded-lg px-4 py-3 text-slate-300 transition hover:bg-slate-800 hover:text-white">
+    ?? Home
+  </a>
+  <p className="rounded-lg bg-emerald-600 px-4 py-3">
+    ? Dashboard
+  </p>
+  <a href="/groups" className="block px-4 py-3 text-slate-300">
+    ?? Savings Groups
+  </a>
+  <a href="/members" className="block px-4 py-3 text-slate-300">
+    ?? Members
+  </a>
+  <a href="/savings" className="block px-4 py-3 text-slate-300">
+    ?? Savings
+  </a>
+  <a href="/loans" className="block px-4 py-3 text-slate-300">
+    ?? Loans
+  </a>
+  <a href="/reports" className="block px-4 py-3 text-slate-300 hover:text-white">
+    ?? Reports
+  </a>
+</nav>
 
           <button
             onClick={handleLogout}
