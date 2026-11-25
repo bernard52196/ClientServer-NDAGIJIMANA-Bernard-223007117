@@ -35,9 +35,39 @@ from .serializers import (
 @permission_classes([ChairForWriteMemberRead])
 def group_list(request):
 
-    # GET: Retrieve all savings groups
+    # GET: Retrieve groups based on user role
     if request.method == "GET":
-        groups = Group.objects.all().order_by("id")
+
+        if request.user.role == "chair":
+            groups = Group.objects.all().order_by("id")
+
+        elif request.user.role == "member":
+            if not request.user.member_id:
+                return Response(
+                    {"error": "Your account is not linked to a member."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            group_id = Member.objects.filter(
+                id=request.user.member_id
+            ).values_list("group_id", flat=True).first()
+
+            if group_id is None:
+                return Response(
+                    {"error": "Member record not found."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            groups = Group.objects.filter(
+                id=group_id
+            ).order_by("id")
+
+        else:
+            return Response(
+                {"error": "Access denied."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         serializer = GroupSerializer(groups, many=True)
         return Response(serializer.data)
 
@@ -137,11 +167,32 @@ def group_list(request):
 @permission_classes([ChairForWriteMemberRead])
 def member_list(request):
 
-    # GET: Retrieve all members
+        # GET: Retrieve members based on user role
     if request.method == "GET":
-        members = Member.objects.select_related(
-            "group"
-        ).all().order_by("id")
+
+        if request.user.role == "chair":
+            members = Member.objects.select_related(
+                "group"
+            ).all().order_by("id")
+
+        elif request.user.role == "member":
+            if not request.user.member_id:
+                return Response(
+                    {"error": "Your account is not linked to a member."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            members = Member.objects.select_related(
+                "group"
+            ).filter(
+                id=request.user.member_id
+            ).order_by("id")
+
+        else:
+            return Response(
+                {"error": "Access denied."},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         serializer = MemberSerializer(members, many=True)
         return Response(serializer.data)
@@ -229,15 +280,35 @@ def member_list(request):
 @permission_classes([ChairForWriteMemberRead])
 def saving_list(request):
 
-    # GET: Retrieve all savings
+    # GET: Retrieve savings based on user role
     if request.method == "GET":
-        savings = Saving.objects.select_related(
-            "member"
-        ).all().order_by("id")
+
+        if request.user.role == "chair":
+            savings = Saving.objects.select_related(
+                "member"
+            ).all().order_by("id")
+
+        elif request.user.role == "member":
+            if not request.user.member_id:
+                return Response(
+                    {"error": "Your account is not linked to a member."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            savings = Saving.objects.select_related(
+                "member"
+            ).filter(
+                member_id=request.user.member_id
+            ).order_by("id")
+
+        else:
+            return Response(
+                {"error": "Access denied."},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         serializer = SavingSerializer(savings, many=True)
         return Response(serializer.data)
-
     # POST: Record new savings
     elif request.method == "POST":
         serializer = SavingSerializer(data=request.data)
@@ -321,9 +392,29 @@ def saving_list(request):
 @permission_classes([ChairForWriteMemberRead])
 def loan_list(request):
 
-    # GET: Retrieve all loans
+    # GET: Retrieve loans based on user role
     if request.method == "GET":
-        loans = Loan.objects.all().order_by("id")
+
+        if request.user.role == "chair":
+            loans = Loan.objects.all().order_by("id")
+
+        elif request.user.role == "member":
+            if not request.user.member_id:
+                return Response(
+                    {"error": "Your account is not linked to a member."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            loans = Loan.objects.filter(
+                member_id=request.user.member_id
+            ).order_by("id")
+
+        else:
+            return Response(
+                {"error": "Access denied."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         serializer = LoanSerializer(loans, many=True)
         return Response(serializer.data)
 
@@ -471,13 +562,47 @@ def loan_list(request):
 @permission_classes([ChairForWriteMemberRead])
 def group_savings_analytics(request):
 
-    with connection.cursor() as cursor:
-        cursor.execute("""
+    if request.user.role == "chair":
+        query = """
             SELECT group_id, group_name, total_savings
             FROM public.group_savings_balances
             ORDER BY group_id;
-        """)
+        """
+        params = []
 
+    elif request.user.role == "member":
+        if not request.user.member_id:
+            return Response(
+                {"error": "Your account is not linked to a member."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        group_id = Member.objects.filter(
+            id=request.user.member_id
+        ).values_list("group_id", flat=True).first()
+
+        if group_id is None:
+            return Response(
+                {"error": "Member record not found."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        query = """
+            SELECT group_id, group_name, total_savings
+            FROM public.group_savings_balances
+            WHERE group_id = %s
+            ORDER BY group_id;
+        """
+        params = [group_id]
+
+    else:
+        return Response(
+            {"error": "Access denied."},
+            status=status.HTTP_403_FORBIDDEN
+        )
+
+    with connection.cursor() as cursor:
+        cursor.execute(query, params)
         rows = cursor.fetchall()
 
     results = [
@@ -492,7 +617,6 @@ def group_savings_analytics(request):
     return Response(results, status=status.HTTP_200_OK)
 
 
-# =====================================================
 # LOAN REPAYMENT API
 # =====================================================
 
@@ -500,11 +624,32 @@ def group_savings_analytics(request):
 @permission_classes([ChairForWriteMemberRead])
 def loan_repayment_list(request):
 
-    # GET: Retrieve all repayment records
+    # GET: Retrieve repayments based on user role
     if request.method == "GET":
-        repayments = LoanRepayment.objects.all().order_by(
-            "-payment_date"
-        )
+
+        if request.user.role == "chair":
+            repayments = LoanRepayment.objects.select_related(
+                "loan", "loan__member"
+            ).all().order_by("-payment_date")
+
+        elif request.user.role == "member":
+            if not request.user.member_id:
+                return Response(
+                    {"error": "Your account is not linked to a member."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+            repayments = LoanRepayment.objects.select_related(
+                "loan", "loan__member"
+            ).filter(
+                loan__member_id=request.user.member_id
+            ).order_by("-payment_date")
+
+        else:
+            return Response(
+                {"error": "Access denied."},
+                status=status.HTTP_403_FORBIDDEN
+            )
 
         serializer = LoanRepaymentSerializer(
             repayments,

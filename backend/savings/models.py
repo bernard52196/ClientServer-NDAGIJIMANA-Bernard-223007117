@@ -94,7 +94,22 @@ class Profile(models.Model):
     id = models.UUIDField(primary_key=True)
     full_name = models.TextField()
     role = models.CharField(max_length=20)
+    member = models.ForeignKey(
+        Member,
+        on_delete=models.DO_NOTHING,
+        db_column="member_id",
+        null=True,
+        blank=True,
+        related_name="profiles"
+    )
     created_at = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = "profiles"
+
+    def __str__(self):
+        return f"{self.full_name} ({self.role})"
 
     class Meta:
         managed = False

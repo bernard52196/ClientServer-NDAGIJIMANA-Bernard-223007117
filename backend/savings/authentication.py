@@ -20,15 +20,14 @@ SUPABASE_ISSUER = f"{SUPABASE_URL}/auth/v1"
 
 
 class SupabaseUser:
-    def __init__(self, user_id, email=None, role=None):
+    def __init__(self, user_id, email=None, role=None, member_id=None):
         self.id = user_id
         self.pk = user_id
         self.email = email
         self.role = role
+        self.member_id = member_id
         self.is_authenticated = True
         self.is_anonymous = False
-
-
 class SupabaseAuthentication(BaseAuthentication):
 
     def authenticate(self, request):
@@ -70,8 +69,9 @@ class SupabaseAuthentication(BaseAuthentication):
 
             user = SupabaseUser(
                 user_id=user_id,
-                email=payload.get("email"),
+                email=payload.get('email'),
                 role=profile.role,
+                member_id=profile.member_id,
             )
 
             return user, token
