@@ -1,5 +1,6 @@
 ﻿
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -25,6 +26,18 @@ from .serializers import (
     LoanSerializer,
     LoanRepaymentSerializer,
 )
+
+
+# =====================================================
+# PUBLIC GROUP LIST API
+# =====================================================
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def public_group_list(request):
+    groups = Group.objects.all().order_by("id")
+    serializer = GroupSerializer(groups, many=True)
+    return Response(serializer.data)
 
 
 # =====================================================
@@ -721,97 +734,100 @@ def loan_repayment_list(request):
                 status=status.HTTP_404_NOT_FOUND
             )
 # =====================================================
-# LINK MEMBER ACCOUNT API
+# =====================================================
+# APPROVE MEMBER REGISTRATION API
 # =====================================================
 
 @api_view(["POST"])
 @permission_classes([ChairOnly])
 def link_member_account(request):
+    profile_id = request.data.get("profile_id")
 
-    member_id = request.data.get("member_id")
-    email = request.data.get("email")
-
-    if not member_id or not email:
+    if not profile_id:
         return Response(
-            {"error": "Member ID and email are required."},
+            {"error": "Registration profile ID is required."},
             status=status.HTTP_400_BAD_REQUEST
         )
 
-    email = email.strip().lower()
-
     try:
         with transaction.atomic():
-
-            # Find and lock the member record
-            member = Member.objects.select_for_update().get(
-                id=member_id
-            )
-
-            # Find and lock the registered account by email
             profile = Profile.objects.select_for_update().get(
-                email__iexact=email,
+                id=profile_id,
                 role="member"
             )
 
-            # Check whether this account is already linked
             if profile.member_id:
                 return Response(
                     {"error": "This account is already linked to a member."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Check whether this member is already linked
-            if Profile.objects.filter(
-                member_id=member.id
-            ).exists():
+            if not profile.requested_group_id:
                 return Response(
-                    {"error": "This member is already linked to an account."},
+                    {"error": "This registration has no selected savings group."},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Link the account to the member
+            group = Group.objects.select_for_update().get(
+                id=profile.requested_group_id
+            )
+
+            # Create a new member; do not reuse or modify existing members.
+            member = Member.objects.create(
+                group=group,
+                name=profile.full_name
+            )
+
             profile.member = member
             profile.save(update_fields=["member"])
 
             return Response(
                 {
-                    "message": "Member account linked successfully.",
+                    "message": "Registration approved and new member created.",
                     "member_id": member.id,
                     "member_name": member.name,
+                    "group_id": group.id,
+                    "group_name": group.name,
                     "email": profile.email
                 },
                 status=status.HTTP_200_OK
             )
 
-    except Member.DoesNotExist:
+    except Profile.DoesNotExist:
         return Response(
-            {"error": "Member record not found."},
+            {"error": "Pending registration not found."},
             status=status.HTTP_404_NOT_FOUND
         )
 
-    except Profile.DoesNotExist:
+    except Group.DoesNotExist:
         return Response(
-            {"error": "No registered member account found with this email."},
+            {"error": "The selected savings group no longer exists."},
             status=status.HTTP_404_NOT_FOUND
         )
-    # =====================================================
+
+
+# =====================================================
 # PENDING MEMBER REGISTRATIONS API
 # =====================================================
 
 @api_view(["GET"])
 @permission_classes([ChairOnly])
 def pending_member_registrations(request):
-
     pending_accounts = Profile.objects.filter(
         role="member",
         member__isnull=True
-    ).order_by("-created_at")
+    ).select_related("requested_group").order_by("-created_at")
 
     data = [
         {
             "id": str(profile.id),
             "full_name": profile.full_name,
             "email": profile.email,
+            "requested_group_id": profile.requested_group_id,
+            "requested_group_name": (
+                profile.requested_group.name
+                if profile.requested_group_id else None
+            ),
             "created_at": profile.created_at
         }
         for profile in pending_accounts

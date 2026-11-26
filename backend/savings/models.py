@@ -1,4 +1,4 @@
-
+﻿
 from django.db import models
 
 
@@ -103,8 +103,15 @@ class Profile(models.Model):
         blank=True,
         related_name="profiles"
     )
+    requested_group = models.ForeignKey(
+        Group,
+        on_delete=models.DO_NOTHING,
+        db_column="requested_group_id",
+        null=True,
+        blank=True,
+        related_name="registration_requests"
+    )
     created_at = models.DateTimeField()
-
     class Meta:
         managed = False
         db_table = "profiles"

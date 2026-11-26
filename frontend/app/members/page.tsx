@@ -22,6 +22,8 @@ type PendingRegistration = {
   id: string;
   full_name: string;
   email: string | null;
+  requested_group_id: number | null;
+  requested_group_name: string | null;
   created_at: string;
 };
 export default function MembersPage() {
@@ -56,8 +58,7 @@ export default function MembersPage() {
 const [pendingRegistrations, setPendingRegistrations] =
   useState<PendingRegistration[]>([]);
 const [loadingPending, setLoadingPending] = useState(false);
-const [pendingMemberSelections, setPendingMemberSelections] =
-  useState<Record<string, string>>({});
+
 
   // Load the logged-in user role from Supabase
   useEffect(() => {
@@ -248,22 +249,13 @@ async function handleLinkAccount(e: FormEvent<HTMLFormElement>) {
     setLinking(false);
   }
 }
-// Approve and link a pending registration
+// Approve registration and create a new member
 async function handleApproveRegistration(
   registration: PendingRegistration
 ) {
-  const selectedMemberId = pendingMemberSelections[registration.id];
-
-  if (!selectedMemberId) {
-    setMessageType("error");
-    setMessage("Please select an existing member record.");
-    return;
-  }
-
   try {
     await apiPost("/link-member-account/", {
-      member_id: Number(selectedMemberId),
-      email: registration.email,
+      profile_id: registration.id,
     });
 
     setPendingRegistrations((current) =>
@@ -272,11 +264,12 @@ async function handleApproveRegistration(
 
     setMessageType("success");
     setMessage(
-      `${registration.full_name} has been successfully linked.`
+      `${registration.full_name} has been approved and added to ${
+        registration.requested_group_name || "the selected group"
+      }.`
     );
 
     await loadData();
-
   } catch (err) {
     setMessageType("error");
     setMessage(
@@ -284,6 +277,7 @@ async function handleApproveRegistration(
     );
   }
 }
+
   if (loading) {
     return <main className="p-10">Loading members...</main>;
   }
@@ -538,39 +532,25 @@ async function handleApproveRegistration(
         {pendingRegistrations.map((registration) => (
           <div key={registration.id} className="rounded-lg border bg-white p-4">
             <h4 className="font-semibold">{registration.full_name}</h4>
-            <p className="mb-3 text-sm text-slate-600">
+
+            <p className="text-sm text-slate-600">
               {registration.email || "No email available"}
             </p>
 
-            <label className="mb-2 block text-sm font-medium">
-              Select Existing Member Record
-            </label>
-
-            <select
-              value={pendingMemberSelections[registration.id] || ""}
-              onChange={(e) =>
-                setPendingMemberSelections((current) => ({
-                  ...current,
-                  [registration.id]: e.target.value,
-                }))
-              }
-              className="mb-3 w-full rounded-lg border border-slate-300 p-3"
-            >
-              <option value="">Choose member</option>
-              {members.map((member) => (
-                <option key={member.id} value={member.id}>
-                  {member.name}
-                </option>
-              ))}
-            </select>
+            <p className="my-3 text-sm">
+              <span className="font-semibold">Requested savings group: </span>
+              <span className="text-emerald-700">
+                {registration.requested_group_name || "No group selected"}
+              </span>
+            </p>
 
             <button
               type="button"
               onClick={() => handleApproveRegistration(registration)}
-              disabled={!registration.email}
+              disabled={!registration.requested_group_id}
               className="rounded-lg bg-emerald-600 px-5 py-2 text-white hover:bg-emerald-700 disabled:opacity-50"
             >
-              Approve and Link Account
+              Approve and Create Member
             </button>
           </div>
         ))}
@@ -578,7 +558,7 @@ async function handleApproveRegistration(
     )}
   </div>
 )}
-            {/* Members Table */}
+{/* Members Table */}
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead className="border-b bg-slate-50 text-slate-500">
