@@ -1,15 +1,23 @@
 ﻿
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+
+type Group = {
+  id: number;
+  name: string;
+};
 
 export default function LoginPage() {
   const router = useRouter();
 
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [fullName, setFullName] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState("");
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [loadingGroups, setLoadingGroups] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -17,12 +25,45 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
+  useEffect(() => {
+    async function loadGroups() {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/public-groups/`
+        );
+
+        if (!response.ok) {
+          throw new Error("Unable to load savings groups.");
+        }
+
+        const data = await response.json();
+        setGroups(data);
+      } catch (error) {
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "Unable to load savings groups."
+        );
+      } finally {
+        setLoadingGroups(false);
+      }
+    }
+
+    loadGroups();
+  }, []);
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    setLoading(true);
     setErrorMessage("");
     setSuccessMessage("");
+
+    if (mode === "signup" && !selectedGroup) {
+      setErrorMessage("Please select a savings group.");
+      return;
+    }
+
+    setLoading(true);
 
     try {
       if (mode === "login") {
@@ -46,6 +87,7 @@ export default function LoginPage() {
           options: {
             data: {
               full_name: fullName.trim(),
+              requested_group_id: Number(selectedGroup),
             },
           },
         });
@@ -56,16 +98,14 @@ export default function LoginPage() {
           return;
         }
 
-        if (data.session) {
-          setSuccessMessage("Account created successfully!");
-          router.push("/");
-          router.refresh();
+        if (data.user && !data.session) {
+          setSuccessMessage(
+            "Registration successful! Please check your email to confirm your account. Your registration is awaiting Chair approval."
+          );
         } else {
           setSuccessMessage(
-            "Account created! Please check your email to verify your account before logging in."
+            "Registration successful! Your account is awaiting Chair approval."
           );
-          setMode("login");
-          setPassword("");
         }
       }
     } catch {
@@ -190,6 +230,45 @@ export default function LoginPage() {
             />
           </div>
 
+          {/* Savings Group (Signup only) */}
+          {mode === "signup" && (
+            <div>
+              <label
+                htmlFor="group"
+                className="mb-2 block font-semibold text-gray-800"
+              >
+                Choose Your Savings Group
+              </label>
+
+              <select
+                id="group"
+                value={selectedGroup}
+                onChange={(e) => setSelectedGroup(e.target.value)}
+                required
+                disabled={loadingGroups || groups.length === 0}
+                className={inputStyle}
+              >
+                <option value="">
+                  {loadingGroups
+                    ? "Loading savings groups..."
+                    : "Select your savings group"}
+                </option>
+
+                {groups.map((group) => (
+                  <option key={group.id} value={group.id}>
+                    {group.name}
+                  </option>
+                ))}
+              </select>
+
+              {!loadingGroups && groups.length === 0 && (
+                <p className="mt-2 text-sm text-red-600">
+                  No savings groups are available. Please contact the Chair.
+                </p>
+              )}
+            </div>
+          )}
+
           {/* Password */}
           <div>
             <label
@@ -249,7 +328,7 @@ export default function LoginPage() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || (mode === "signup" && (loadingGroups || groups.length === 0))}
             className="w-full rounded-lg bg-green-700 py-3.5 font-bold text-white shadow-sm transition hover:bg-green-800 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading
