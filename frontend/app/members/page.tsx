@@ -18,7 +18,12 @@ type Member = {
   group: number;
   name: string;
 };
-
+type PendingRegistration = {
+  id: string;
+  full_name: string;
+  email: string | null;
+  created_at: string;
+};
 export default function MembersPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
@@ -43,6 +48,16 @@ export default function MembersPage() {
   const [editName, setEditName] = useState("");
   const [editGroup, setEditGroup] = useState("");
   const [updating, setUpdating] = useState(false);
+  // Link Member Account states
+ const [linkingMember, setLinkingMember] = useState<number | null>(null);
+ const [linkEmail, setLinkEmail] = useState("");
+ const [linking, setLinking] = useState(false);
+ // Pending registration states
+const [pendingRegistrations, setPendingRegistrations] =
+  useState<PendingRegistration[]>([]);
+const [loadingPending, setLoadingPending] = useState(false);
+const [pendingMemberSelections, setPendingMemberSelections] =
+  useState<Record<string, string>>({});
 
   // Load the logged-in user role from Supabase
   useEffect(() => {
@@ -89,6 +104,25 @@ export default function MembersPage() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+  // Load pending registrations for the Chair
+useEffect(() => {
+  if (userRole !== "chair") return;
+
+  async function loadPendingRegistrations() {
+    setLoadingPending(true);
+
+    try {
+      const data = await apiGet("/pending-member-registrations/");
+      setPendingRegistrations(data.pending_registrations ?? []);
+    } catch (err) {
+      console.error("Unable to load pending registrations:", err);
+    } finally {
+      setLoadingPending(false);
+    }
+  }
+
+  loadPendingRegistrations();
+}, [userRole]);
 
   // Register a new member
   async function handleCreateMember(e: FormEvent<HTMLFormElement>) {
@@ -181,7 +215,75 @@ export default function MembersPage() {
       setUpdating(false);
     }
   }
+  // Link an existing member to a registered Supabase account
+async function handleLinkAccount(e: FormEvent<HTMLFormElement>) {
+  e.preventDefault();
 
+  if (linkingMember === null || !linkEmail.trim()) {
+    setMessageType("error");
+    setMessage("Please enter the registered email address.");
+    return;
+  }
+
+  setLinking(true);
+  setMessage("");
+
+  try {
+    await apiPost("/link-member-account/", {
+      member_id: linkingMember,
+      email: linkEmail.trim(),
+    });
+
+    setMessageType("success");
+    setMessage("Member account linked successfully!");
+
+    setLinkingMember(null);
+    setLinkEmail("");
+  } catch (err) {
+    setMessageType("error");
+    setMessage(
+      err instanceof Error ? err.message : "Unable to link account."
+    );
+  } finally {
+    setLinking(false);
+  }
+}
+// Approve and link a pending registration
+async function handleApproveRegistration(
+  registration: PendingRegistration
+) {
+  const selectedMemberId = pendingMemberSelections[registration.id];
+
+  if (!selectedMemberId) {
+    setMessageType("error");
+    setMessage("Please select an existing member record.");
+    return;
+  }
+
+  try {
+    await apiPost("/link-member-account/", {
+      member_id: Number(selectedMemberId),
+      email: registration.email,
+    });
+
+    setPendingRegistrations((current) =>
+      current.filter((item) => item.id !== registration.id)
+    );
+
+    setMessageType("success");
+    setMessage(
+      `${registration.full_name} has been successfully linked.`
+    );
+
+    await loadData();
+
+  } catch (err) {
+    setMessageType("error");
+    setMessage(
+      err instanceof Error ? err.message : "Unable to approve registration."
+    );
+  }
+}
   if (loading) {
     return <main className="p-10">Loading members...</main>;
   }
@@ -367,7 +469,115 @@ export default function MembersPage() {
                 {message}
               </p>
             )}
+             {/* Link Member Account Form */}
+{userRole === "chair" && linkingMember !== null && (
+  <form
+    onSubmit={handleLinkAccount}
+    className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-5"
+  >
+    <h4 className="mb-3 font-semibold">Link Member Account</h4>
 
+    <p className="mb-3 text-sm text-slate-600">
+      Member: {members.find((m) => m.id === linkingMember)?.name}
+    </p>
+
+    <label className="mb-2 block text-sm font-medium">
+      Registered Email Address
+    </label>
+
+    <input
+      type="email"
+      value={linkEmail}
+      onChange={(e) => setLinkEmail(e.target.value)}
+      placeholder="Enter the member's registered email"
+      required
+      className="mb-4 w-full rounded-lg border border-slate-300 bg-white p-3"
+    />
+
+    <div className="flex gap-3">
+      <button
+        type="submit"
+        disabled={linking}
+        className="rounded-lg bg-blue-600 px-5 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+      >
+        {linking ? "Linking..." : "Link Account"}
+      </button>
+
+      <button
+        type="button"
+        onClick={() => {
+          setLinkingMember(null);
+          setLinkEmail("");
+        }}
+        disabled={linking}
+        className="rounded-lg bg-slate-200 px-5 py-2 text-slate-700"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+)}
+{/* Pending Member Registrations */}
+{userRole === "chair" && (
+  <div className="mb-8 rounded-lg border border-amber-200 bg-amber-50 p-5">
+    <div className="mb-4 flex items-center justify-between">
+      <h3 className="text-lg font-bold text-slate-800">
+        Pending Member Registrations
+      </h3>
+      <span className="rounded-full bg-amber-200 px-3 py-1 text-sm font-semibold text-amber-800">
+        {pendingRegistrations.length} Pending
+      </span>
+    </div>
+
+    {loadingPending ? (
+      <p>Loading registrations...</p>
+    ) : pendingRegistrations.length === 0 ? (
+      <p>No pending registrations found.</p>
+    ) : (
+      <div className="space-y-4">
+        {pendingRegistrations.map((registration) => (
+          <div key={registration.id} className="rounded-lg border bg-white p-4">
+            <h4 className="font-semibold">{registration.full_name}</h4>
+            <p className="mb-3 text-sm text-slate-600">
+              {registration.email || "No email available"}
+            </p>
+
+            <label className="mb-2 block text-sm font-medium">
+              Select Existing Member Record
+            </label>
+
+            <select
+              value={pendingMemberSelections[registration.id] || ""}
+              onChange={(e) =>
+                setPendingMemberSelections((current) => ({
+                  ...current,
+                  [registration.id]: e.target.value,
+                }))
+              }
+              className="mb-3 w-full rounded-lg border border-slate-300 p-3"
+            >
+              <option value="">Choose member</option>
+              {members.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.name}
+                </option>
+              ))}
+            </select>
+
+            <button
+              type="button"
+              onClick={() => handleApproveRegistration(registration)}
+              disabled={!registration.email}
+              className="rounded-lg bg-emerald-600 px-5 py-2 text-white hover:bg-emerald-700 disabled:opacity-50"
+            >
+              Approve and Link Account
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+)}
             {/* Members Table */}
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
@@ -481,13 +691,27 @@ export default function MembersPage() {
 
                           {userRole === "chair" && (
                             <td className="p-3">
-                              <button
-                                type="button"
-                                onClick={() => startEditing(member)}
-                              className="rounded-lg bg-blue-600 px-3 py-1.5 text-white hover:bg-blue-700"
-                            >
-                                Edit
-                              </button>
+                              <div className="flex flex-wrap gap-2">
+  <button
+    type="button"
+    onClick={() => startEditing(member)}
+    className="rounded-lg bg-blue-600 px-3 py-1.5 text-white hover:bg-blue-700"
+  >
+    Edit
+  </button>
+
+  <button
+    type="button"
+    onClick={() => {
+      setLinkingMember(member.id);
+      setLinkEmail("");
+      setMessage("");
+    }}
+    className="rounded-lg bg-emerald-600 px-3 py-1.5 text-white hover:bg-emerald-700"
+  >
+    Link Account
+  </button>
+</div>
                             </td>
                           )}
                         </tr>

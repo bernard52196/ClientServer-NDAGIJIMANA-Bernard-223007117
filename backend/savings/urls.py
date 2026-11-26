@@ -17,4 +17,11 @@ urlpatterns = [
         views.group_savings_analytics,
         name="group-savings-analytics"
     ),
+   path("link-member-account/", views.link_member_account, name="link-member-account"),
+   path(
+    "pending-member-registrations/",
+    views.pending_member_registrations,
+    name="pending-member-registrations"
+),
+   
 ]

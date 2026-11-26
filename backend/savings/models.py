@@ -93,6 +93,7 @@ class LoanRepayment(models.Model):
 class Profile(models.Model):
     id = models.UUIDField(primary_key=True)
     full_name = models.TextField()
+    email = models.EmailField(max_length=255, null=True, blank=True)
     role = models.CharField(max_length=20)
     member = models.ForeignKey(
         Member,

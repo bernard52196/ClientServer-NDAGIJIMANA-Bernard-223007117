@@ -19,3 +19,13 @@ class ChairForWriteMemberRead(BasePermission):
             return user.role in ["chair", "member"]
 
         return user.role == "chair"
+class ChairOnly(BasePermission):
+    message = "Only the chair can link member accounts."
+
+    def has_permission(self, request, view):
+        user = request.user
+        return bool(
+            user
+            and user.is_authenticated
+            and user.role == "chair"
+        )

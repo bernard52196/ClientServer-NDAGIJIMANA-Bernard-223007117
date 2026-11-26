@@ -7,8 +7,7 @@ from django.db import connection, transaction
 from django.db.models import Sum
 
 from decimal import Decimal
-
-from .permissions import ChairForWriteMemberRead
+from .permissions import ChairForWriteMemberRead, ChairOnly
 
 from .models import (
     Group,
@@ -16,6 +15,7 @@ from .models import (
     Saving,
     Loan,
     LoanRepayment,
+    Profile,
 )
 
 from .serializers import (
@@ -720,3 +720,107 @@ def loan_repayment_list(request):
                 {"error": "Loan not found."},
                 status=status.HTTP_404_NOT_FOUND
             )
+# =====================================================
+# LINK MEMBER ACCOUNT API
+# =====================================================
+
+@api_view(["POST"])
+@permission_classes([ChairOnly])
+def link_member_account(request):
+
+    member_id = request.data.get("member_id")
+    email = request.data.get("email")
+
+    if not member_id or not email:
+        return Response(
+            {"error": "Member ID and email are required."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    email = email.strip().lower()
+
+    try:
+        with transaction.atomic():
+
+            # Find and lock the member record
+            member = Member.objects.select_for_update().get(
+                id=member_id
+            )
+
+            # Find and lock the registered account by email
+            profile = Profile.objects.select_for_update().get(
+                email__iexact=email,
+                role="member"
+            )
+
+            # Check whether this account is already linked
+            if profile.member_id:
+                return Response(
+                    {"error": "This account is already linked to a member."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Check whether this member is already linked
+            if Profile.objects.filter(
+                member_id=member.id
+            ).exists():
+                return Response(
+                    {"error": "This member is already linked to an account."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Link the account to the member
+            profile.member = member
+            profile.save(update_fields=["member"])
+
+            return Response(
+                {
+                    "message": "Member account linked successfully.",
+                    "member_id": member.id,
+                    "member_name": member.name,
+                    "email": profile.email
+                },
+                status=status.HTTP_200_OK
+            )
+
+    except Member.DoesNotExist:
+        return Response(
+            {"error": "Member record not found."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    except Profile.DoesNotExist:
+        return Response(
+            {"error": "No registered member account found with this email."},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    # =====================================================
+# PENDING MEMBER REGISTRATIONS API
+# =====================================================
+
+@api_view(["GET"])
+@permission_classes([ChairOnly])
+def pending_member_registrations(request):
+
+    pending_accounts = Profile.objects.filter(
+        role="member",
+        member__isnull=True
+    ).order_by("-created_at")
+
+    data = [
+        {
+            "id": str(profile.id),
+            "full_name": profile.full_name,
+            "email": profile.email,
+            "created_at": profile.created_at
+        }
+        for profile in pending_accounts
+    ]
+
+    return Response(
+        {
+            "count": len(data),
+            "pending_registrations": data
+        },
+        status=status.HTTP_200_OK
+    )
