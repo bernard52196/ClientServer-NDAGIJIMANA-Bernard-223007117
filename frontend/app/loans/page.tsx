@@ -291,25 +291,25 @@ export default function LoansPage() {
               href="/"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              â–¦ Dashboard
+              ▦ Dashboard
             </Link>
 
             <Link
               href="/members"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              ðŸ‘¥ Members
+              👥 Members
             </Link>
 
             <Link
               href="/savings"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              ðŸ’° Savings
+              💰 Savings
             </Link>
 
             <p className="rounded-lg bg-emerald-600 px-4 py-3">
-              ðŸ’³ Loans
+              💳 Loans
             </p>
           </nav>
         </aside>
@@ -329,7 +329,7 @@ export default function LoansPage() {
               href="/"
               className="text-sm font-medium text-emerald-700 hover:underline"
             >
-              â† Back to Dashboard
+              ← Back Back to Dashboard
             </Link>
           </header>
 
@@ -338,19 +338,19 @@ export default function LoansPage() {
             <StatCard
               title="Total Principal"
               value={formatMoney(totalPrincipal)}
-              icon="ðŸ’µ"
+              icon="💵"
             />
 
             <StatCard
               title="Calculated Interest (5%)"
               value={formatMoney(totalInterest)}
-              icon="ðŸ“ˆ"
+              icon="📈"
             />
 
             <StatCard
               title="Outstanding Loans"
               value={formatMoney(totalOutstanding)}
-              icon="ðŸ’³"
+              icon="💳"
             />
           </div>
 

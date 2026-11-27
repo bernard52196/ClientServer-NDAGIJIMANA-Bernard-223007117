@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import StudentIdentification from "@/components/StudentIdentification";
 import CommunityLoading from "@/components/CommunityLoading";
 import { useCallback, useEffect, useState } from "react";
@@ -57,12 +57,12 @@ export default function ReportsPage() {
         </p>
 
         <nav className="space-y-3">
-          <a href="/" className="block px-4 py-3 text-slate-300">â–¦ Dashboard</a>
-          <a href="/groups" className="block px-4 py-3 text-slate-300">ðŸ‘¥ Savings Groups</a>
-          <a href="/members" className="block px-4 py-3 text-slate-300">ðŸ‘¤ Members</a>
-          <a href="/savings" className="block px-4 py-3 text-slate-300">ðŸ’° Savings</a>
-          <a href="/loans" className="block px-4 py-3 text-slate-300">ðŸ’³ Loans</a>
-          <a href="/reports" className="block rounded-lg bg-emerald-600 px-4 py-3">ðŸ“Š Reports</a>
+          <a href="/" className="block px-4 py-3 text-slate-300">Dashboard</a>
+          <a href="/groups" className="block px-4 py-3 text-slate-300">Savings Groups</a>
+          <a href="/members" className="block px-4 py-3 text-slate-300">Members</a>
+          <a href="/savings" className="block px-4 py-3 text-slate-300">Savings</a>
+          <a href="/loans" className="block px-4 py-3 text-slate-300">Loans</a>
+          <a href="/reports" className="block rounded-lg bg-emerald-600 px-4 py-3">Reports</a>
         </nav>
       </aside>
 

@@ -1,4 +1,4 @@
-﻿
+
 "use client";
 import StudentIdentification from "@/components/StudentIdentification";
 import CommunityLoading from "@/components/CommunityLoading";
@@ -306,23 +306,23 @@ async function handleApproveRegistration(
               href="/"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              â–¦ Dashboard
+              ▦ Dashboard
             </Link>
 
             <Link
               href="/"
               className="block px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              ðŸ‘¥ Savings Groups
+              👥 Savings Groups
             </Link>
 
             <p className="rounded-lg bg-emerald-600 px-4 py-3">
-              ðŸ‘¤ Members
+              👤 Members
             </p>
 
-            <p className="px-4 py-3 text-slate-300">ðŸ’° Savings</p>
-            <p className="px-4 py-3 text-slate-300">ðŸ’³ Loans</p>
-            <p className="px-4 py-3 text-slate-300">ðŸ“Š Reports</p>
+            <p className="px-4 py-3 text-slate-300">💰 Savings</p>
+            <p className="px-4 py-3 text-slate-300">💳 Loans</p>
+            <p className="px-4 py-3 text-slate-300">📊 Reports</p>
           </nav>
         </aside>
 
@@ -351,13 +351,13 @@ async function handleApproveRegistration(
             <StatCard
               title="Total Members"
               value={members.length.toString()}
-              icon="ðŸ‘¥"
+              icon="👥"
             />
 
             <StatCard
               title="Registered Groups"
               value={groups.length.toString()}
-              icon="ðŸ˜ï¸"
+              icon="🏠"
             />
           </div>
 
@@ -563,7 +563,7 @@ async function handleApproveRegistration(
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead className="border-b bg-slate-50 text-slate-500">
-                  <tr>
+                   <tr>
                     <th className="p-3">Member ID</th>
                     <th className="p-3">Member Name</th>
                     <th className="p-3">Savings Group</th>
@@ -730,7 +730,7 @@ function StatCard({
 }
 
 
-
+  
 
 
 

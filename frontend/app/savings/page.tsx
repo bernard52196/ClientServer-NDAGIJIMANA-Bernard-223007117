@@ -1,4 +1,4 @@
-﻿
+
 "use client";
 import StudentIdentification from "@/components/StudentIdentification";
 import CommunityLoading from "@/components/CommunityLoading";
@@ -163,25 +163,25 @@ export default function SavingsPage() {
               href="/"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              â–¦ Dashboard
+              ▦ Dashboard
             </Link>
 
             <Link
               href="/members"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              ðŸ‘¥ Members
+              👥 Members
             </Link>
 
             <p className="rounded-lg bg-emerald-600 px-4 py-3">
-              ðŸ’° Savings
+              💰 Savings
             </p>
 
             <Link
               href="/loans"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              ðŸ’³ Loans
+              💳 Loans
             </Link>
           </nav>
         </aside>
@@ -203,7 +203,7 @@ export default function SavingsPage() {
               href="/"
               className="text-sm font-medium text-emerald-700 hover:underline"
             >
-              â† Back to Dashboard
+              ← Back Back to Dashboard
             </Link>
           </header>
 
@@ -212,13 +212,13 @@ export default function SavingsPage() {
             <StatCard
               title="Total Savings"
               value={formatMoney(totalSavings)}
-              icon="ðŸ’°"
+              icon="💰"
             />
 
             <StatCard
               title="Savings Records"
               value={savings.length.toString()}
-              icon="ðŸ“Š"
+              icon="📊"
             />
           </div>
 

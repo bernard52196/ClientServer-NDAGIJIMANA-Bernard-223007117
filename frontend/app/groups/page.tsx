@@ -199,7 +199,7 @@ export default function GroupsPage() {
           href="/"
           className="rounded-lg bg-slate-900 px-5 py-3 text-white"
         >
-          â† Dashboard
+          ← Dashboard
         </a>
       </header>
 
@@ -320,7 +320,7 @@ export default function GroupsPage() {
                         href={`/groups/${group.id}`}
                         className="font-medium text-emerald-700 hover:underline"
                       >
-                        View Details â†’
+                        View Details →
                       </a>
                     </td>
 
