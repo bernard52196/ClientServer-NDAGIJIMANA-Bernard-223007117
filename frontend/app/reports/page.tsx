@@ -1,5 +1,6 @@
-"use client";
+﻿"use client";
 import StudentIdentification from "@/components/StudentIdentification";
+import CommunityLoading from "@/components/CommunityLoading";
 import { useCallback, useEffect, useState } from "react";
 import { apiGet } from "@/lib/api";
 
@@ -43,8 +44,12 @@ export default function ReportsPage() {
     ...analytics.map((item) => Number(item.total_savings))
   );
 
+  if (loading) {
+    return <CommunityLoading message="LOADING YOUR DASHBOARD..." />;
+  }
+
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-800 md:flex">
+    <div className="min-h-screen dashboard-photo-bg text-slate-800 md:flex">
       <aside className="w-full bg-slate-900 p-6 text-white md:min-h-screen md:w-64">
         <h1 className="mb-2 text-2xl font-bold">CommunitySave</h1>
         <p className="mb-8 text-sm text-slate-400">
@@ -52,12 +57,12 @@ export default function ReportsPage() {
         </p>
 
         <nav className="space-y-3">
-          <a href="/" className="block px-4 py-3 text-slate-300">▦ Dashboard</a>
-          <a href="/groups" className="block px-4 py-3 text-slate-300">👥 Savings Groups</a>
-          <a href="/members" className="block px-4 py-3 text-slate-300">👤 Members</a>
-          <a href="/savings" className="block px-4 py-3 text-slate-300">💰 Savings</a>
-          <a href="/loans" className="block px-4 py-3 text-slate-300">💳 Loans</a>
-          <a href="/reports" className="block rounded-lg bg-emerald-600 px-4 py-3">📊 Reports</a>
+          <a href="/" className="block px-4 py-3 text-slate-300">â–¦ Dashboard</a>
+          <a href="/groups" className="block px-4 py-3 text-slate-300">ðŸ‘¥ Savings Groups</a>
+          <a href="/members" className="block px-4 py-3 text-slate-300">ðŸ‘¤ Members</a>
+          <a href="/savings" className="block px-4 py-3 text-slate-300">ðŸ’° Savings</a>
+          <a href="/loans" className="block px-4 py-3 text-slate-300">ðŸ’³ Loans</a>
+          <a href="/reports" className="block rounded-lg bg-emerald-600 px-4 py-3">ðŸ“Š Reports</a>
         </nav>
       </aside>
 
@@ -171,3 +176,4 @@ export default function ReportsPage() {
     </div>
   );
 }
+

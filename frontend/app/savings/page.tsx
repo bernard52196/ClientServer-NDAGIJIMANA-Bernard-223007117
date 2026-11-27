@@ -1,6 +1,7 @@
-
+﻿
 "use client";
 import StudentIdentification from "@/components/StudentIdentification";
+import CommunityLoading from "@/components/CommunityLoading";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { apiGet, apiPost } from "@/lib/api";
@@ -136,7 +137,7 @@ export default function SavingsPage() {
   }
 
   if (loading) {
-    return <main className="p-10">Loading savings...</main>;
+    return <CommunityLoading message="LOADING YOUR DASHBOARD..." />;
   }
 
   if (error) {
@@ -148,7 +149,7 @@ export default function SavingsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-800">
+    <main className="min-h-screen dashboard-photo-bg text-slate-800">
       <div className="flex min-h-screen">
 
         {/* Sidebar */}
@@ -162,25 +163,25 @@ export default function SavingsPage() {
               href="/"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              ▦ Dashboard
+              â–¦ Dashboard
             </Link>
 
             <Link
               href="/members"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              👥 Members
+              ðŸ‘¥ Members
             </Link>
 
             <p className="rounded-lg bg-emerald-600 px-4 py-3">
-              💰 Savings
+              ðŸ’° Savings
             </p>
 
             <Link
               href="/loans"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              💳 Loans
+              ðŸ’³ Loans
             </Link>
           </nav>
         </aside>
@@ -202,7 +203,7 @@ export default function SavingsPage() {
               href="/"
               className="text-sm font-medium text-emerald-700 hover:underline"
             >
-              ← Back to Dashboard
+              â† Back to Dashboard
             </Link>
           </header>
 
@@ -211,13 +212,13 @@ export default function SavingsPage() {
             <StatCard
               title="Total Savings"
               value={formatMoney(totalSavings)}
-              icon="💰"
+              icon="ðŸ’°"
             />
 
             <StatCard
               title="Savings Records"
               value={savings.length.toString()}
-              icon="📊"
+              icon="ðŸ“Š"
             />
           </div>
 
@@ -383,3 +384,5 @@ function StatCard({
     </div>
   );
 }
+
+

@@ -1,6 +1,7 @@
-
+﻿
 "use client";
 import StudentIdentification from "@/components/StudentIdentification";
+import CommunityLoading from "@/components/CommunityLoading";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { apiGet, apiPost } from "@/lib/api";
@@ -259,7 +260,7 @@ export default function LoansPage() {
   }
 
   if (loading) {
-    return <main className="p-10">Loading loans...</main>;
+    return <CommunityLoading message="LOADING YOUR DASHBOARD..." />;
   }
 
   if (error) {
@@ -277,7 +278,7 @@ export default function LoansPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-800">
+    <main className="min-h-screen dashboard-photo-bg text-slate-800">
       <div className="flex min-h-screen">
         {/* Sidebar */}
         <aside className="hidden w-64 bg-slate-900 p-6 text-white md:block">
@@ -290,25 +291,25 @@ export default function LoansPage() {
               href="/"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              ▦ Dashboard
+              â–¦ Dashboard
             </Link>
 
             <Link
               href="/members"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              👥 Members
+              ðŸ‘¥ Members
             </Link>
 
             <Link
               href="/savings"
               className="block rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-700"
             >
-              💰 Savings
+              ðŸ’° Savings
             </Link>
 
             <p className="rounded-lg bg-emerald-600 px-4 py-3">
-              💳 Loans
+              ðŸ’³ Loans
             </p>
           </nav>
         </aside>
@@ -328,7 +329,7 @@ export default function LoansPage() {
               href="/"
               className="text-sm font-medium text-emerald-700 hover:underline"
             >
-              ← Back to Dashboard
+              â† Back to Dashboard
             </Link>
           </header>
 
@@ -337,19 +338,19 @@ export default function LoansPage() {
             <StatCard
               title="Total Principal"
               value={formatMoney(totalPrincipal)}
-              icon="💵"
+              icon="ðŸ’µ"
             />
 
             <StatCard
               title="Calculated Interest (5%)"
               value={formatMoney(totalInterest)}
-              icon="📈"
+              icon="ðŸ“ˆ"
             />
 
             <StatCard
               title="Outstanding Loans"
               value={formatMoney(totalOutstanding)}
-              icon="💳"
+              icon="ðŸ’³"
             />
           </div>
 
@@ -710,3 +711,5 @@ function StatCard({
     </div>
   );
 }
+
+

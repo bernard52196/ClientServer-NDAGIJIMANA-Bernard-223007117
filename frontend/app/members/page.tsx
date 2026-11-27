@@ -1,6 +1,7 @@
-
+﻿
 "use client";
 import StudentIdentification from "@/components/StudentIdentification";
+import CommunityLoading from "@/components/CommunityLoading";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { apiGet, apiPost, apiPatch } from "@/lib/api";
@@ -279,7 +280,7 @@ async function handleApproveRegistration(
 }
 
   if (loading) {
-    return <main className="p-10">Loading members...</main>;
+    return <CommunityLoading message="LOADING YOUR DASHBOARD..." />;
   }
 
   if (error) {
@@ -291,7 +292,7 @@ async function handleApproveRegistration(
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-800">
+    <main className="min-h-screen dashboard-photo-bg text-slate-800">
       <div className="flex min-h-screen">
 
         {/* Sidebar */}
@@ -727,6 +728,8 @@ function StatCard({
     </div>
   );
 }
+
+
 
 
 

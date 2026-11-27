@@ -1,6 +1,7 @@
-
+﻿
 "use client";
 import StudentIdentification from "@/components/StudentIdentification";
+import CommunityLoading from "@/components/CommunityLoading";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { apiGet, apiPost, apiPatch, apiDelete } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
@@ -179,8 +180,12 @@ export default function GroupsPage() {
     }
   }
 
+  if (loading) {
+    return <CommunityLoading message="LOADING YOUR DASHBOARD..." />;
+  }
+
   return (
-    <div className="min-h-screen bg-slate-100 p-6 text-slate-800 md:p-10">
+    <div className="min-h-screen dashboard-photo-bg p-6 text-slate-800 md:p-10">
       <header className="mb-8 flex flex-wrap items-center justify-between gap-4">
          
         <div>
@@ -194,7 +199,7 @@ export default function GroupsPage() {
           href="/"
           className="rounded-lg bg-slate-900 px-5 py-3 text-white"
         >
-          ← Dashboard
+          â† Dashboard
         </a>
       </header>
 
@@ -315,7 +320,7 @@ export default function GroupsPage() {
                         href={`/groups/${group.id}`}
                         className="font-medium text-emerald-700 hover:underline"
                       >
-                        View Details →
+                        View Details â†’
                       </a>
                     </td>
 
@@ -371,3 +376,5 @@ export default function GroupsPage() {
     </div>
   );
 }
+
+
